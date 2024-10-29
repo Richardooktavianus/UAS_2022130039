@@ -6,6 +6,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Daftar Kamar</h1>
     <a href="{{ route('kamar.create') }}" class="btn btn-primary">Tambah Kamar</a>
+    <a href="{{ route('tipe_kamar.index') }}" class="btn btn-primary">Tipe Kamar</a>
 </div>
 
 @if(session('success'))

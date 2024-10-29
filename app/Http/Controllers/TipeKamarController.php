@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TipeKamar;
 use Illuminate\Http\Request;
 
 class TipeKamarController extends Controller
@@ -63,6 +64,7 @@ class TipeKamarController extends Controller
             'deskripsi' => 'nullable',
         ]);
 
+        $tipe_kamar = TipeKamar::findOrFail($id);
         $tipe_kamar->update($request->all());
         return redirect()->route('tipe_kamar.index')->with('success', 'Tipe kamar berhasil diupdate.');
     }
@@ -72,6 +74,7 @@ class TipeKamarController extends Controller
      */
     public function destroy(string $id)
     {
+        $tipe_kamar = TipeKamar::findOrFail($id);
         $tipe_kamar->delete();
         return redirect()->route('tipe_kamar.index')->with('success', 'Tipe kamar berhasil dihapus.');
     }
