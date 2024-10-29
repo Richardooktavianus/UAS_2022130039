@@ -37,7 +37,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        {{-- <a class="nav-link" href="{{ route('kamar.index') }}">Kamar</a> --}}
+                        <a class="nav-link" href="{{ route('kamar.index') }}">Kamar</a>
                     </li>
                     <li class="nav-item">
                         {{-- <a class="nav-link" href="{{ route('penghuni.index') }}">Penghuni</a> --}}
