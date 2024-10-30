@@ -30,7 +30,8 @@ class TipeKamarController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_tipe' => 'required',
+            'nama_tipe' => 'required|unique:tipe_kamars,nama_tipe',
+            'harga_per_bulan' => 'required|integer|',
             'deskripsi' => 'nullable',
         ]);
 

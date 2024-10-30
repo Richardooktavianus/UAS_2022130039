@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kamar;
 use App\Models\TipeKamar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class KamarController extends Controller
 {
@@ -13,7 +14,7 @@ class KamarController extends Controller
      */
     public function index()
     {
-        $kamars = Kamar::all();
+        $kamars = Kamar::latest()->paginate(9);
         return view('kamar.index', compact('kamars'));
     }
 
@@ -36,9 +37,15 @@ class KamarController extends Controller
             'tipe_kamar_id' => 'required|exists:tipe_kamars,id',
             'deskripsi' => 'required',
             'status' => 'required|boolean',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        Kamar::create($request->all());
+        $data = $request->all();
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $request->file('photo')->store('photos');
+        }
+
+        Kamar::create($data);
         return redirect()->route('kamar.index')->with('success', 'Kamar berhasil ditambahkan.');
     }
 
@@ -47,7 +54,8 @@ class KamarController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $kamar = Kamar::findOrFail($id);
+        return view('kamar.show', compact('kamar'));
     }
 
     /**
@@ -70,10 +78,19 @@ class KamarController extends Controller
             'tipe_kamar_id' => 'required|exists:tipe_kamars,id',
             'deskripsi' => 'required',
             'status' => 'required|boolean',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $kamar = Kamar::findOrFail($id);
-        $kamar->update($request->all());
+        $data = $request->all();
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $request->file('photo')->store('photos');
+            if ($kamar->photo) {
+                Storage::delete($kamar->photo);
+            }
+        }
+
+        $kamar->update($data);
         return redirect()->route('kamar.index')->with('success', 'Kamar berhasil diperbarui.');
     }
 

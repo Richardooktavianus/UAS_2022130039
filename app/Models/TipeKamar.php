@@ -9,7 +9,11 @@ class TipeKamar extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nama_tipe', 'harga_per_bulan'];
+    protected $fillable = [
+        'nama_tipe',
+        'harga_per_bulan',
+        'deskripsi',
+    ];
 
     public function kamars()
     {

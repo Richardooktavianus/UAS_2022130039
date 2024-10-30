@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('tipe_kamars', function (Blueprint $table) {
             $table->id();
             $table->string('nama_tipe');
-            $table->decimal('harga_per_bulan', 10, 2);
+            $table->text('deskripsi')->nullable();
+            $table->integer('harga_per_bulan');
             $table->timestamps();
         });
     }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('tipe_kamar_id');
             $table->text('deskripsi');
             $table->boolean('status')->default(true);
+            $table->string('photo')->nullable();
             $table->timestamps();
 
             $table->foreign('tipe_kamar_id')->references('id')->on('tipe_kamars')->onDelete('cascade');

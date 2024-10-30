@@ -20,6 +20,7 @@
             <th>ID</th>
             <th>Nama Tipe</th>
             <th>Deskripsi</th>
+            <th>Harga</th>
             <th>Aksi</th>
         </tr>
     </thead>
@@ -28,7 +29,10 @@
         <tr>
             <td>{{ $tipe_kamar->id }}</td>
             <td>{{ $tipe_kamar->nama_tipe }}</td>
-            <td>{{ $tipe_kamar->deskripsi }}</td>
+            <td>{{ Str::limit($tipe_kamar->deskripsi, 50) }}</td>
+            <td>
+                Rp {{ number_format($tipe_kamar->harga_per_bulan, 0, ',', '.') }} / bulan
+            </td>
             <td>
                 <a href="{{ route('tipe_kamar.edit', $tipe_kamar->id) }}" class="btn btn-warning btn-sm">Edit</a>
                 <form action="{{ route('tipe_kamar.destroy', $tipe_kamar->id) }}" method="POST" style="display:inline;">

@@ -36,6 +36,7 @@
             <td>{{ $kamar->status ? 'Tersedia' : 'Tidak Tersedia' }}</td>
             <td>
                 <a href="{{ route('kamar.edit', $kamar->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{{ route('kamar.show', $kamar->id) }}" class="btn btn-info btn-sm">Lihat</a>
                 <form action="{{ route('kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('DELETE')

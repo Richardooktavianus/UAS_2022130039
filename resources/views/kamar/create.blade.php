@@ -8,7 +8,7 @@
         <h5>Tambah Kamar</h5>
     </div>
     <div class="card-body">
-        <form action="{{ route('kamar.store') }}" method="POST">
+        <form action="{{ route('kamar.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
                 <label for="nama_kamar" class="form-label">Nama Kamar</label>
@@ -34,9 +34,14 @@
                     <option value="0">Tidak Tersedia</option>
                 </select>
             </div>
+            <div class="mb-3">
+                <label for="photo" class="form-label">Foto</label>
+                <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
+            </div>
             <button type="submit" class="btn btn-primary">Simpan</button>
             <a href="{{ route('kamar.index') }}" class="btn btn-secondary">Kembali</a>
         </form>
     </div>
 </div>
 @endsection
+
