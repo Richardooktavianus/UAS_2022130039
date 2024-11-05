@@ -11,7 +11,6 @@ class Petugas extends Model
         'nama',
         'email',
         'no_telepon',
-        'jobdesk',
     ];
 
     public function kategori()

@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\KategoriResource\Pages;
 use App\Filament\Resources\KategoriResource\RelationManagers;
+use App\Models\Fasilitas;
 use App\Models\Kategori;
+use App\Models\Petugas;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -28,12 +30,27 @@ class KategoriResource extends Resource
                 Forms\Components\TextInput::make('nama_kategori'),
                 Forms\Components\TextInput::make('ukuran_kamar'),
                 Forms\Components\TextInput::make('harga_per_bulan'),
-                Forms\Components\Select::make('fasilitas')
-                ->options([
-                    'tersedia' => 'Tersedia',
-                    'tidak_tersedia' => 'Tidak Tersedia',
-                ])
-                ->default('tersedia'),
+                Forms\Components\Select::make('fasilitas_id')
+                    ->label('Fasilitas')
+                    ->relationship('fasilitas', 'nama')
+                    ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function (callable $set, $state) {
+                        // Find the associated petugas based on the selected fasilitas
+                        $fasilitas = Fasilitas::find($state);
+                        if ($fasilitas && $fasilitas->petugas) {
+                            $set('petugas_id', $fasilitas->petugas->id); // Automatically set the petugas_id
+                        } else {
+                            $set('petugas_id', null); // Reset if no petugas found
+                        }
+                    }),
+
+                // Petugas Select
+                Forms\Components\Select::make('petugas_id')
+                    ->label('Petugas')
+                    ->relationship('petugas', 'nama')
+                    ->required()
+                    ->disabled(),
                 Forms\Components\FileUpload::make('photo'),
             ]);
     }
@@ -46,6 +63,7 @@ class KategoriResource extends Resource
                 Tables\Columns\TextColumn::make('ukuran_kamar'),
                 Tables\Columns\TextColumn::make('harga_per_bulan'),
                 Tables\Columns\TextColumn::make('fasilitas'),
+                Tables\Columns\TextColumn::make('petugas'),
                 Tables\Columns\ImageColumn::make('photo'),
             ])
             ->filters([

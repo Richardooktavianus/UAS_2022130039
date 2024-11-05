@@ -23,7 +23,7 @@ class PenghuniResource extends Resource
     {
         return $form
             ->schema([
-                //
+                
             ]);
     }
 

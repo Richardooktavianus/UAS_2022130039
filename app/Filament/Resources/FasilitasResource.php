@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\FasilitasResource\Pages;
 use App\Filament\Resources\FasilitasResource\RelationManagers;
 use App\Models\Fasilitas;
+use App\Models\Petugas;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,7 +24,11 @@ class FasilitasResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('nama'),
+                Forms\Components\TextInput::make('harga'),
+                Forms\Components\Select::make('petugas_id')->options(
+                    Petugas::pluck('nama', 'id')
+                )->required(),
             ]);
     }
 
@@ -31,7 +36,9 @@ class FasilitasResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('nama'),
+                Tables\Columns\TextColumn::make('harga'),
+                Tables\Columns\TextColumn::make('petugas_id'),
             ])
             ->filters([
                 //
