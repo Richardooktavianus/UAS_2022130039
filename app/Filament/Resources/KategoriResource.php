@@ -10,6 +10,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -23,7 +25,16 @@ class KategoriResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('nama_kategori'),
+                Forms\Components\TextInput::make('ukuran_kamar'),
+                Forms\Components\TextInput::make('harga_per_bulan'),
+                Forms\Components\Select::make('fasilitas')
+                ->options([
+                    'tersedia' => 'Tersedia',
+                    'tidak_tersedia' => 'Tidak Tersedia',
+                ])
+                ->default('tersedia'),
+                Forms\Components\FileUpload::make('photo'),
             ]);
     }
 
@@ -31,7 +42,11 @@ class KategoriResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('nama_kategori'),
+                Tables\Columns\TextColumn::make('ukuran_kamar'),
+                Tables\Columns\TextColumn::make('harga_per_bulan'),
+                Tables\Columns\TextColumn::make('fasilitas'),
+                Tables\Columns\ImageColumn::make('photo'),
             ])
             ->filters([
                 //
@@ -64,3 +79,5 @@ class KategoriResource extends Resource
         ];
     }
 }
+
+

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\KamarResource\Pages;
 use App\Filament\Resources\KamarResource\RelationManagers;
 use App\Models\Kamar;
+use App\Models\Kategori;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,7 +24,16 @@ class KamarResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('nomor_kamar'),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'tersedia' => 'Tersedia',
+                        'tidak_tersedia' => 'Tidak Tersedia',
+                    ])
+                    ->default('tersedia'),
+                Forms\Components\Select::make('kategori_id')->options(
+                    Kategori::pluck('nama_kategori', 'id')
+                )->required(),
             ]);
     }
 
@@ -31,7 +41,9 @@ class KamarResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('nomor_kamar')->limit(50),
+                Tables\Columns\TextColumn::make('kategori.nama_kategori')->limit(50),
+                Tables\Columns\TextColumn::make('status'),
             ])
             ->filters([
                 //
@@ -64,3 +76,4 @@ class KamarResource extends Resource
         ];
     }
 }
+

@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('nama_kategori')->unique();
             $table->string('ukuran_kamar');
             $table->decimal('harga_per_bulan', 10, 2);
-            $table->string('fasilitas');
+            $table->foreignId('fasilitas_id')->constrained('fasilitas')->onDelete('cascade');
+            $table->string('deskripsi');
             $table->string('photo');
             $table->timestamps();
         });
