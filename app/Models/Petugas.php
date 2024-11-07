@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Petugas extends Model
 {
     protected $fillable = [
-        'nama',
+        'nama_petugas',
         'email',
         'no_telepon',
     ];

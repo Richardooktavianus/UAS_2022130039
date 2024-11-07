@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         Schema::create('sewas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('kamar_id')->constrained('kamars')->onDelete('cascade');
-            $table->foreignId('penghuni_id')->constrained('penghunis')->onDelete('cascade');
-            $table->date('lama_sewa');
+            $table->foreignId('penghuni_id')->constrained()->onDelete('cascade');
+            $table->foreignId('kamar_id')->constrained()->onDelete('cascade');
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_akhir');
             $table->timestamps();
         });
+
     }
 
     /**

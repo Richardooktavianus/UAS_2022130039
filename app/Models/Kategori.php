@@ -17,6 +17,14 @@ class Kategori extends Model
         'photo',
     ];
 
+    public function getTotalHargaAttribute()
+    {
+        $fasilitasPrice = $this->fasilitas ? $this->fasilitas->harga : 0;
+        $hargaPerBulan = $this->harga_per_bulan ?? 0;
+
+        return $fasilitasPrice + $hargaPerBulan;
+    }
+
     public function fasilitas()
     {
         return $this->belongsTo(Fasilitas::class);

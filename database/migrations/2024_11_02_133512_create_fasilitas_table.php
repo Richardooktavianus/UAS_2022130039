@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('fasilitas', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
+            $table->string('nama_fasilitas')->unique();
             $table->decimal('harga');
             $table->foreignId('petugas_id')->constrained('petugas')->onDelete('cascade');
+            $table->string('deskripsi');
             $table->timestamps();
         });
     }

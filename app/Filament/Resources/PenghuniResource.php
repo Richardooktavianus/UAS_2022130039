@@ -23,7 +23,21 @@ class PenghuniResource extends Resource
     {
         return $form
             ->schema([
-                
+                Forms\Components\TextInput::make('nama')
+                    ->label('Nama'),
+                Forms\Components\Select::make('jenis_kelamin')
+                    ->label('Jenis Kelamin')
+                    ->options([
+                        'laki-laki' => 'Laki-laki',
+                        'perempuan' => 'Perempuan',
+                    ])
+                    ->default('pilih'),
+                Forms\Components\TextInput::make('alamat')
+                    ->label('Alamat'),
+                Forms\Components\TextInput::make('no_telepon')
+                    ->label('No Telepon'),
+                Forms\Components\TextInput::make('status')
+                    ->label('Status'),
             ]);
     }
 
@@ -31,7 +45,11 @@ class PenghuniResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('nama'),
+                Tables\Columns\TextColumn::make('jenis_kelamin'),
+                Tables\Columns\TextColumn::make('alamat'),
+                Tables\Columns\TextColumn::make('no_telepon'),
+                Tables\Columns\TextColumn::make('status'),
             ])
             ->filters([
                 //

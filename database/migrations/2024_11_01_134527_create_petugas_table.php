@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('petugas', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
+            $table->string('nama_petugas')->unique();
             $table->string('email');
             $table->string('no_telepon');
             $table->timestamps();

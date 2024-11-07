@@ -24,11 +24,14 @@ class FasilitasResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama'),
-                Forms\Components\TextInput::make('harga'),
-                Forms\Components\Select::make('petugas_id')->options(
-                    Petugas::pluck('nama', 'id')
-                )->required(),
+                Forms\Components\TextInput::make('nama_fasilitas')
+                    ->label('Nama Fasilitas'),
+                Forms\Components\TextInput::make('harga')
+                    ->label('Harga'),
+                Forms\Components\Select::make('petugas_id')
+                    ->label('Petugas')
+                    ->options(Petugas::pluck('nama_petugas', 'id'))
+                    ->required(),
             ]);
     }
 
@@ -36,9 +39,9 @@ class FasilitasResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama'),
+                Tables\Columns\TextColumn::make('nama_fasilitas'),
                 Tables\Columns\TextColumn::make('harga'),
-                Tables\Columns\TextColumn::make('petugas_id'),
+                Tables\Columns\TextColumn::make('petugas.nama_petugas'),
             ])
             ->filters([
                 //

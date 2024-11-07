@@ -23,7 +23,7 @@ class PetugasResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama'),
+                Forms\Components\TextInput::make('nama_petugas'),
                 Forms\Components\TextInput::make('email'),
                 Forms\Components\TextInput::make('no_telepon'),
             ]);
@@ -33,7 +33,7 @@ class PetugasResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama'),
+                Tables\Columns\TextColumn::make('nama_petugas'),
                 Tables\Columns\TextColumn::make('email'),
                 Tables\Columns\TextColumn::make('no_telepon'),
             ])

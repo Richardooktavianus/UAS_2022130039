@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Sewa extends Model
 {
     use HasFactory;
-    
+
+
     protected $fillable = [
         'kamar_id',
         'penghuni_id',
-        'lama_sewa',
+        'tanggal_mulai' => 'date',
+        'tanggal_akhir' => 'date',
     ];
 
     public function kamar()

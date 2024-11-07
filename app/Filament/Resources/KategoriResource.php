@@ -16,42 +16,35 @@ use Filament\Tables\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Route;
 
 class KategoriResource extends Resource
 {
     protected static ?string $model = Kategori::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function form(Form $form): Form
+    public static function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_kategori'),
-                Forms\Components\TextInput::make('ukuran_kamar'),
-                Forms\Components\TextInput::make('harga_per_bulan'),
+                Forms\Components\TextInput::make('nama_kategori')
+                    ->label('Nama Kategori')
+                    ->required()
+                ,
+                Forms\Components\TextInput::make('ukuran_kamar')
+                    ->label('Ukuran Kamar')
+                    ->required(),
+                Forms\Components\TextInput::make('harga_per_bulan')
+                    ->label('Harga per Bulan')
+                    ->required(),
                 Forms\Components\Select::make('fasilitas_id')
                     ->label('Fasilitas')
-                    ->relationship('fasilitas', 'nama')
-                    ->required()
-                    ->reactive()
-                    ->afterStateUpdated(function (callable $set, $state) {
-                        // Find the associated petugas based on the selected fasilitas
-                        $fasilitas = Fasilitas::find($state);
-                        if ($fasilitas && $fasilitas->petugas) {
-                            $set('petugas_id', $fasilitas->petugas->id); // Automatically set the petugas_id
-                        } else {
-                            $set('petugas_id', null); // Reset if no petugas found
-                        }
-                    }),
-
-                // Petugas Select
-                Forms\Components\Select::make('petugas_id')
-                    ->label('Petugas')
-                    ->relationship('petugas', 'nama')
-                    ->required()
-                    ->disabled(),
-                Forms\Components\FileUpload::make('photo'),
+                    ->options(Fasilitas::pluck('nama_fasilitas', 'id')->toArray())
+                    ->required(),
+                Forms\Components\TextInput::make('deskripsi')
+                    ->label('Deskripsi')
+                    ->required(),
+                Forms\Components\FileUpload::make('photo')
+                    ->label('Photo'),
             ]);
     }
 
@@ -62,29 +55,25 @@ class KategoriResource extends Resource
                 Tables\Columns\TextColumn::make('nama_kategori'),
                 Tables\Columns\TextColumn::make('ukuran_kamar'),
                 Tables\Columns\TextColumn::make('harga_per_bulan'),
-                Tables\Columns\TextColumn::make('fasilitas'),
-                Tables\Columns\TextColumn::make('petugas'),
+                Tables\Columns\TextColumn::make('fasilitas.nama_fasilitas'),
+                Tables\Columns\TextColumn::make('total_harga')
+                    ->label('Total Harga')
+                    ->getStateUsing(fn ($record) => number_format($record->total_harga, 2)),
+                Tables\Columns\TextColumn::make('deskripsi'),
                 Tables\Columns\ImageColumn::make('photo'),
-            ])
-            ->filters([
-                //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
