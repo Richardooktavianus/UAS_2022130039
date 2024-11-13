@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SewaResource extends Resource
 {
@@ -35,33 +36,45 @@ class SewaResource extends Resource
                 ->options(Kamar::pluck('nomor_kamar', 'id'))
                 ->required(),
 
-            Forms\Components\DatePicker::make('tanggal_mulai')
-                ->label('Tanggal Mulai')
-                ->required()
-                ->reactive(),
 
-            Forms\Components\DatePicker::make('tanggal_akhir')
-                ->label('Tanggal Akhir')
-                ->required()
-                ->reactive()
-                ->afterStateUpdated(function (callable $get, callable $set) {
-                    $tanggalMulai = $get('tanggal_mulai');
-                    $tanggalAkhir = $get('tanggal_akhir');
+Forms\Components\DatePicker::make('tanggal_mulai')
+->label('Mulai Sewa')
+->required()
+->default(Carbon::now())
+->displayFormat('d-m-Y')
+->reactive()
+->afterStateUpdated(function (callable $get, callable $set) {
+    Log::info('Tanggal Mulai Updated: ' . $get('tanggal_mulai')); // Log tanggal_mulai changes
+}),
 
-                    if ($tanggalMulai && $tanggalAkhir) {
-                        $startDate = Carbon::parse($tanggalMulai);
-                        $endDate = Carbon::parse($tanggalAkhir);
-                        $durationInMonths = $startDate->diffInMonths($endDate);
+Forms\Components\DatePicker::make('tanggal_akhir')
+->label('Akhir Sewa')
+->required()
+->displayFormat('d-m-Y')
+->reactive()
+->afterStateUpdated(function (callable $get, callable $set) {
+    $tanggalMulai = $get('tanggal_mulai');
+    $tanggalAkhir = $get('tanggal_akhir');
 
+    Log::info('Tanggal Akhir Updated: ' . $tanggalAkhir); // Log tanggal_akhir changes
 
-                        $set('lama_sewa', $durationInMonths);
-                    }
-                }),
+    if ($tanggalMulai && $tanggalAkhir) {
+        $startDate = Carbon::parse($tanggalMulai);
+        $endDate = Carbon::parse($tanggalAkhir);
 
-            Forms\Components\TextInput::make('lama_sewa')
-                ->label('Lama Sewa (Bulan)')
-                ->disabled()
-                ->default(0),
+        $durationInMonths = $startDate->diffInMonths($endDate);
+        Log::info('Calculated Lama Sewa (months): ' . $durationInMonths); // Log calculation
+
+        $set('lama_sewa', $durationInMonths);
+    }
+}),
+
+Forms\Components\TextInput::make('lama_sewa')
+->label('Lama Sewa (Bulan)')
+->disabled()
+->default(0)
+->suffix('Bulan')
+->dehydrated(),
         ]);
     }
 
@@ -71,7 +84,11 @@ class SewaResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('penghuni.nama')->label('Penghuni'),
                 Tables\Columns\TextColumn::make('kamar.nomor_kamar')->label('Kamar'),
-                Tables\Columns\TextColumn::make('lama_sewa')->label('Lama Sewa (Bulan)'),
+                Tables\Columns\TextColumn::make('tanggal_mulai')->label('Mulai Sewa'),
+                Tables\Columns\TextColumn::make('tanggal_akhir')->label('Akhir Sewa'),
+                Tables\Columns\TextColumn::make('lama_sewa')
+                    ->label('Lama Sewa (Bulan)')
+                    ->formatStateUsing(fn (Sewa $record): string => $record->lama_sewa . ' Bulan'),
             ])
             ->filters([
                 //
@@ -104,3 +121,4 @@ class SewaResource extends Resource
         ];
     }
 }
+

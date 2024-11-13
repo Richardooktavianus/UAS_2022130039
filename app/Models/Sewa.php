@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,9 +14,19 @@ class Sewa extends Model
     protected $fillable = [
         'kamar_id',
         'penghuni_id',
-        'tanggal_mulai' => 'date',
-        'tanggal_akhir' => 'date',
+        'tanggal_mulai',
+        'tanggal_akhir',
+        'lama_sewa',
     ];
+
+    protected static function booted()
+    {
+        static::saving(function ($sewa) {
+            if ($sewa->tanggal_mulai && $sewa->tanggal_akhir) {
+                $sewa->lama_sewa = Carbon::parse($sewa->tanggal_mulai)->diffInMonths(Carbon::parse($sewa->tanggal_akhir));
+            }
+        });
+    }
 
     public function kamar()
     {
@@ -30,5 +41,9 @@ class Sewa extends Model
     public function transaksi()
     {
         return $this->hasMany(Transaksi::class);
+    }
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class);
     }
 }

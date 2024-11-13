@@ -26,23 +26,29 @@ class TransaksiResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('sewa_id')
-                    ->label('ID Sewa')
-                    ->options(Sewa::pluck('id', 'id'))
-                    ->reactive()
-                    ->required()
-                    ->afterStateUpdated(function (callable $set, $state) {
-                        // Fetch related Sewa record
-                        $sewa = Sewa::find($state);
+    ->label('ID Sewa')
+    ->options(Sewa::pluck('id', 'id'))
+    ->reactive()
+    ->required()
+    ->afterStateUpdated(function (callable $set, $state) {
+        // Fetch related Sewa record
+        $sewa = Sewa::find($state);
 
-                        if ($sewa) {
-                            $set('penghuni_id', $sewa->penghuni_id);
-                            $set('tanggal_sewa', $sewa->tanggal_mulai);
-                            $set('jumlah_bayar', $sewa->kategori->harga_total);
-                        } else {
-                            $set('penghuni_id', null);
-                            $set('tanggal_sewa', null);
-                            $set('jumlah_bayar', null);
-                        }
+        if ($sewa) {
+            $set('penghuni_id', $sewa->penghuni_id);
+            $set('tanggal_sewa', $sewa->tanggal_mulai);
+
+            // Check if the 'kategori' relation is valid and has 'harga_per_bulan'
+            if ($sewa->kategori) {
+                $set('jumlah_bayar', $sewa->kategori->harga_per_bulan);
+            } else {
+                $set('jumlah_bayar', null);  // Or a default value, depending on your needs
+            }
+        } else {
+            $set('penghuni_id', null);
+            $set('tanggal_sewa', null);
+            $set('jumlah_bayar', null);
+        }
                     }),
 
                 Forms\Components\Select::make('penghuni_id')
@@ -54,7 +60,7 @@ class TransaksiResource extends Resource
                 Forms\Components\DatePicker::make('tanggal_transaksi')
                     ->label('Tanggal Transaksi')
                     ->required()
-                    ->disabled(),
+                    ->default(now()),
 
                 Forms\Components\TextInput::make('jumlah_bayar')
                     ->label('Jumlah Bayar')
