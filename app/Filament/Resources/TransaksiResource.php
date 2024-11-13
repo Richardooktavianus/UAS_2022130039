@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransaksiResource\Pages;
-use App\Filament\Resources\TransaksiResource\RelationManagers;
+use App\Models\Kamar;
 use App\Models\Penghuni;
 use App\Models\Sewa;
 use App\Models\Transaksi;
@@ -12,8 +12,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TransaksiResource extends Resource
 {
@@ -26,34 +24,37 @@ class TransaksiResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('sewa_id')
-    ->label('ID Sewa')
-    ->options(Sewa::pluck('id', 'id'))
-    ->reactive()
-    ->required()
-    ->afterStateUpdated(function (callable $set, $state) {
-        // Fetch related Sewa record
-        $sewa = Sewa::find($state);
+                    ->label('ID Sewa')
+                    ->options(Sewa::pluck('id', 'id'))
+                    ->reactive()
+                    ->required()
+                    ->afterStateUpdated(function (callable $set, $state) {
+                        $sewa = Sewa::with('kategori')->find($state);
 
-        if ($sewa) {
-            $set('penghuni_id', $sewa->penghuni_id);
-            $set('tanggal_sewa', $sewa->tanggal_mulai);
-
-            // Check if the 'kategori' relation is valid and has 'harga_per_bulan'
-            if ($sewa->kategori) {
-                $set('jumlah_bayar', $sewa->kategori->harga_per_bulan);
-            } else {
-                $set('jumlah_bayar', null);  // Or a default value, depending on your needs
-            }
-        } else {
-            $set('penghuni_id', null);
-            $set('tanggal_sewa', null);
-            $set('jumlah_bayar', null);
-        }
+                        if ($sewa) {
+                            // Set penghuni, kamar, tanggal_sewa, and jumlah_bayar from Sewa model
+                            $set('penghuni_id', $sewa->penghuni_id);
+                            $set('kamar_id', $sewa->kamar_id);
+                            $set('tanggal_sewa', $sewa->tanggal_mulai);
+                            $set('jumlah_bayar', $sewa->kategori->total_harga ?? null); // Ensure jumlah_bayar is set here
+                        } else {
+                            // Clear fields if no Sewa is found
+                            $set('penghuni_id', null);
+                            $set('kamar_id', null);
+                            $set('tanggal_sewa', null);
+                            $set('jumlah_bayar', null);
+                        }
                     }),
 
                 Forms\Components\Select::make('penghuni_id')
                     ->label('Penghuni')
                     ->options(Penghuni::pluck('nama', 'id'))
+                    ->required()
+                    ->disabled(),
+
+                Forms\Components\Select::make('kamar_id')
+                    ->label('Kamar')
+                    ->options(Kamar::pluck('nomor_kamar', 'id'))
                     ->required()
                     ->disabled(),
 
@@ -64,8 +65,20 @@ class TransaksiResource extends Resource
 
                 Forms\Components\TextInput::make('jumlah_bayar')
                     ->label('Jumlah Bayar')
-                    ->required()
-                    ->disabled(),
+                    ->disabled()
+                    ->default(function (?Transaksi $record): ?int {
+                        if ($record && $record->sewa && $record->sewa->kategori) {
+                            return $record->sewa->kategori->total_harga ?? null;
+                        }
+                        return null;
+                    })
+                    ->afterStateHydrated(function (callable $set, $state) {
+                        if ($state && $state->sewa && $state->sewa->kategori) {
+                            $set('jumlah_bayar', $state->sewa->kategori->total_harga ?? null);
+                        } else {
+                            $set('jumlah_bayar', null);
+                        }
+                    }),
 
                 Forms\Components\Select::make('metode_pembayaran')
                     ->label('Metode Pembayaran')
@@ -74,10 +87,6 @@ class TransaksiResource extends Resource
                         'transfer' => 'Transfer',
                     ])
                     ->required(),
-
-                Forms\Components\TextInput::make('keterangan')
-                    ->label('Keterangan')
-                    ->maxLength(255),
 
                 Forms\Components\Select::make('status_pembayaran')
                     ->label('Status Pembayaran')
@@ -95,22 +104,10 @@ class TransaksiResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('sewa.id')->label('ID Sewa'),
-                Tables\Columns\TextColumn::make('tanggal_sewa')->label('Tanggal Sewa'),
-                Tables\Columns\TextColumn::make('jumlah_bayar')->label('Total Bayar'),
+                Tables\Columns\TextColumn::make('tanggal_transaksi')->label('Tanggal Transaksi'),
+                Tables\Columns\TextColumn::make('jumlah_bayar')->label('Jumlah Bayar'),
                 Tables\Columns\TextColumn::make('metode_pembayaran')->label('Metode Pembayaran'),
-                Tables\Columns\TextColumn::make('status')->label('Status'),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Columns\TextColumn::make('status_pembayaran')->label('Status Pembayaran'),
             ]);
     }
 

@@ -34,6 +34,9 @@ class KamarResource extends Resource
                 Forms\Components\Select::make('kategori_id')->options(
                     Kategori::pluck('nama_kategori', 'id')
                 )->required(),
+
+                Forms\Components\Hidden::make('harga')
+                    ->default(fn (): int => Kategori::findOrFail(request()->input('kategori_id'))->harga),
             ]);
     }
 
@@ -43,6 +46,8 @@ class KamarResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_kamar')->limit(50),
                 Tables\Columns\TextColumn::make('kategori.nama_kategori')->limit(50),
+                Tables\Columns\TextColumn::make('kategori.total_harga')->label('Total Harga')->limit(50)
+                    ->getStateUsing(fn (Kamar $record): string => number_format($record->kategori->total_harga, 2)),
                 Tables\Columns\TextColumn::make('status'),
             ])
             ->filters([
