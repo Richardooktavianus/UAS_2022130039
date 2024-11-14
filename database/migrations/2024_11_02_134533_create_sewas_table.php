@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('tanggal_mulai')->nullable();
             $table->date('tanggal_akhir')->nullable();
             $table->integer('lama_sewa')->nullable();
+            $table->decimal('jumlah_harga',10,2);
             $table->timestamps();
         });
     }

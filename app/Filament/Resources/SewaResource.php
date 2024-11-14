@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SewaResource\Pages;
-use App\Filament\Resources\SewaResource\RelationManagers;
 use App\Models\Kamar;
 use App\Models\Penghuni;
 use App\Models\Sewa;
@@ -12,8 +11,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -21,7 +18,7 @@ class SewaResource extends Resource
 {
     protected static ?string $model = Sewa::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-s-currency-dollar';
 
     public static function form(Form $form): Form
     {
@@ -34,47 +31,82 @@ class SewaResource extends Resource
             Forms\Components\Select::make('kamar_id')
                 ->label('Kamar')
                 ->options(Kamar::pluck('nomor_kamar', 'id'))
-                ->required(),
+                ->required()
+                ->reactive()
+                ->afterStateUpdated(function (callable $get, callable $set) {
+                    $kamarId = $get('kamar_id');
+                    $lamaSewa = $get('lama_sewa');
 
+                    if ($kamarId && $lamaSewa) {
+                        $kamar = Kamar::with('kategori')->find($kamarId);
+                        if ($kamar && $kamar->kategori) {
+                            $kategoriHarga = $kamar->kategori->total_harga;
+                            $totalHarga = $lamaSewa * $kategoriHarga;
+                            $set('jumlah_harga', $totalHarga);
+                        }
+                    }
+                }),
 
-Forms\Components\DatePicker::make('tanggal_mulai')
-->label('Mulai Sewa')
-->required()
-->default(Carbon::now())
-->displayFormat('d-m-Y')
-->reactive()
-->afterStateUpdated(function (callable $get, callable $set) {
-    Log::info('Tanggal Mulai Updated: ' . $get('tanggal_mulai')); // Log tanggal_mulai changes
-}),
+            Forms\Components\DatePicker::make('tanggal_mulai')
+                ->label('Mulai Sewa')
+                ->required()
+                ->default(Carbon::now())
+                ->displayFormat('d-m-Y')
+                ->reactive()
+                ->afterStateUpdated(function (callable $get, callable $set) {
+                    Log::info('Tanggal Mulai Updated: ' . $get('tanggal_mulai'));
+                }),
 
-Forms\Components\DatePicker::make('tanggal_akhir')
-->label('Akhir Sewa')
-->required()
-->displayFormat('d-m-Y')
-->reactive()
-->afterStateUpdated(function (callable $get, callable $set) {
-    $tanggalMulai = $get('tanggal_mulai');
-    $tanggalAkhir = $get('tanggal_akhir');
+            Forms\Components\DatePicker::make('tanggal_akhir')
+                ->label('Akhir Sewa')
+                ->required()
+                ->displayFormat('d-m-Y')
+                ->reactive()
+                ->afterStateUpdated(function (callable $get, callable $set) {
+                    $tanggalMulai = $get('tanggal_mulai');
+                    $tanggalAkhir = $get('tanggal_akhir');
 
-    Log::info('Tanggal Akhir Updated: ' . $tanggalAkhir); // Log tanggal_akhir changes
+                    Log::info('Tanggal Akhir Updated: ' . $tanggalAkhir);
 
-    if ($tanggalMulai && $tanggalAkhir) {
-        $startDate = Carbon::parse($tanggalMulai);
-        $endDate = Carbon::parse($tanggalAkhir);
+                    if ($tanggalMulai && $tanggalAkhir) {
+                        $startDate = Carbon::parse($tanggalMulai);
+                        $endDate = Carbon::parse($tanggalAkhir);
 
-        $durationInMonths = $startDate->diffInMonths($endDate);
-        Log::info('Calculated Lama Sewa (months): ' . $durationInMonths); // Log calculation
+                        $durationInMonths = $startDate->diffInMonths($endDate);
+                        Log::info('Calculated Lama Sewa (months): ' . $durationInMonths);
 
-        $set('lama_sewa', $durationInMonths);
-    }
-}),
+                        $set('lama_sewa', $durationInMonths);
+                    }
+                }),
 
-Forms\Components\TextInput::make('lama_sewa')
-->label('Lama Sewa (Bulan)')
-->disabled()
-->default(0)
-->suffix('Bulan')
-->dehydrated(),
+            Forms\Components\TextInput::make('lama_sewa')
+                ->label('Lama Sewa (Bulan)')
+                ->disabled()
+                ->default(0)
+                ->suffix('Bulan')
+                ->dehydrated()
+                ->reactive()
+                ->afterStateUpdated(function (callable $get, callable $set) {
+                    $lamaSewa = $get('lama_sewa');
+                    $kamarId = $get('kamar_id');
+
+                    if ($kamarId && $lamaSewa) {
+                        $kamar = Kamar::with('kategori')->find($kamarId);
+                        if ($kamar && $kamar->kategori) {
+                            $kategoriHarga = $kamar->kategori->total_harga;
+                            $totalHarga = $lamaSewa * $kategoriHarga;
+                            $set('jumlah_harga', $totalHarga);
+                        }
+                    }
+                }),
+
+            Forms\Components\TextInput::make('jumlah_harga')
+                ->label('Total Harga')
+                ->disabled()
+                ->dehydrated()
+                ->default(0)
+                ->prefix('Rp')
+                ->numeric(),
         ]);
     }
 
@@ -89,6 +121,9 @@ Forms\Components\TextInput::make('lama_sewa')
                 Tables\Columns\TextColumn::make('lama_sewa')
                     ->label('Lama Sewa (Bulan)')
                     ->formatStateUsing(fn (Sewa $record): string => $record->lama_sewa . ' Bulan'),
+                Tables\Columns\TextColumn::make('jumlah_harga')
+                    ->label('Total Harga')
+                    ->formatStateUsing(fn (Sewa $record): string => 'Rp ' . number_format($record->jumlah_harga, 0, ',', '.')),
             ])
             ->filters([
                 //
@@ -121,4 +156,3 @@ Forms\Components\TextInput::make('lama_sewa')
         ];
     }
 }
-

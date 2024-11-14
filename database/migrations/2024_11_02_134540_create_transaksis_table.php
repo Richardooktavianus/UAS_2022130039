@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sewa_id')->constrained('sewas')->onDelete('cascade');
-            $table->foreignId('penghuni_id')->constrained('penghunis')->onDelete('cascade');
+            $table->foreignId('penghuni_id')->nullable()->change();
             $table->timestamp('tanggal_transaksi')->default(now());
-            $table->decimal('jumlah_bayar', 10, 2);
+            $table->decimal('jumlah_bayar', 10, 2)->nullable()->change();
             $table->string('metode_pembayaran');
-            $table->string('keterangan');
             $table->string('status_pembayaran');
             $table->timestamps();
         });

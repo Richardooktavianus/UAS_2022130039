@@ -15,6 +15,7 @@ class Kategori extends Model
         'petugas_id',
         'deskripsi',
         'photo',
+
     ];
 
     public function getTotalHargaAttribute()

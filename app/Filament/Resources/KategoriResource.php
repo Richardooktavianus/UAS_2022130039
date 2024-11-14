@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 class KategoriResource extends Resource
 {
     protected static ?string $model = Kategori::class;
+    protected static ?string $navigationIcon = 'heroicon-s-list-bullet';
 
     public static function form(Forms\Form $form): Forms\Form
     {
@@ -56,7 +57,7 @@ class KategoriResource extends Resource
                 Tables\Columns\TextColumn::make('ukuran_kamar'),
                 Tables\Columns\TextColumn::make('harga_per_bulan'),
                 Tables\Columns\TextColumn::make('fasilitas.nama_fasilitas'),
-                Tables\Columns\TextColumn::make('total_harga')
+                Tables\Columns\TextColumn::make('harga')
                     ->label('Total Harga')
                     ->getStateUsing(fn ($record) => number_format($record->total_harga, 2)),
                 Tables\Columns\TextColumn::make('deskripsi'),

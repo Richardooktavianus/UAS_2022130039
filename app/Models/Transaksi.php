@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Transaksi extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'sewa_id',
         'penghuni_id',
         'tanggal_transaksi',
         'jumlah_bayar',
         'metode_pembayaran',
-        'keterangan',
         'status_pembayaran',
     ];
 
@@ -25,17 +25,19 @@ class Transaksi extends Model
 
     public function penghuni()
     {
-        return $this->hasOneThrough(Penghuni::class, Sewa::class, 'id', 'id', 'sewa_id', 'penghuni_id');
+        return $this->belongsTo(Penghuni::class, 'penghuni_id');
     }
 
-    public function kategori()
+    public function kamar()
     {
-        return $this->belongsToThrough(Kategori::class, Sewa::class, 'sewa_id', 'id', 'id', 'kategori_id');
+        return $this->belongsTo(Kamar::class, 'kamar_id');
     }
 
     public function getJumlahBayarAttribute()
     {
-        return $this->sewa->kategori->total_harga ?? 0;
+        $kategoriHarga = $this->sewa->kategori->total_harga ?? 0;
+        $lamaSewa = $this->sewa->lama_sewa ?? 1;
+
+        return $kategoriHarga * $lamaSewa;
     }
 }
-
