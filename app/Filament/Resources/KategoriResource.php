@@ -59,7 +59,7 @@ class KategoriResource extends Resource
                 Tables\Columns\TextColumn::make('fasilitas.nama_fasilitas'),
                 Tables\Columns\TextColumn::make('harga')
                     ->label('Total Harga')
-                    ->getStateUsing(fn ($record) => number_format($record->total_harga, 2)),
+                    ->money('IDR'),
                 Tables\Columns\TextColumn::make('deskripsi'),
                 Tables\Columns\ImageColumn::make('photo'),
             ])

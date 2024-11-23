@@ -123,7 +123,7 @@ class SewaResource extends Resource
                     ->formatStateUsing(fn (Sewa $record): string => $record->lama_sewa . ' Bulan'),
                 Tables\Columns\TextColumn::make('jumlah_harga')
                     ->label('Total Harga')
-                    ->formatStateUsing(fn (Sewa $record): string => 'Rp ' . number_format($record->jumlah_harga, 0, ',', '.')),
+                    ->money('IDR'),
             ])
             ->filters([
                 //

@@ -1,0 +1,24 @@
+:root {
+    --primary-color: #4A90E2; /* Ganti dengan warna utama Anda */
+    --sidebar-bg-color: #1E293B; /* Warna background sidebar */
+    --sidebar-text-color: #FFFFFF; /* Warna teks di sidebar */
+}
+
+body {
+    background-color: #F5F5F5; /* Warna background global */
+}
+
+.filament-sidebar {
+    background-color: var(--sidebar-bg-color) !important;
+    color: var(--sidebar-text-color) !important;
+}
+
+.filament-sidebar a {
+    color: var(--sidebar-text-color) !important;
+}
+
+.filament-main {
+    background-color: #FFFFFF; /* Warna background utama */
+    border-radius: 8px;
+    padding: 16px;
+}

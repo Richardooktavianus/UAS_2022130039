@@ -28,12 +28,13 @@ class TransaksiResource extends Resource
                 ->options(Sewa::pluck('id', 'id'))
                 ->reactive()
                 ->required()
+                ->relationship('sewa', 'id')
                 ->afterStateUpdated(function (callable $set, $state) {
                     $sewa = Sewa::find($state);
 
                     if ($sewa) {
-                        $set('penghuni_id', $sewa->penghuni_id);
-                        $set('kamar_id', $sewa->kamar_id);
+                        $set('penghuni_id', $sewa->penghuni->id);
+                        $set('kamar_id', $sewa->kamar->id);
                         $set('tanggal_sewa', $sewa->tanggal_mulai);
                         $set('jumlah_bayar', $sewa->jumlah_harga ?? 0);
                     } else {
@@ -42,31 +43,38 @@ class TransaksiResource extends Resource
                         $set('tanggal_sewa', null);
                         $set('jumlah_bayar', null);
                     }
+                })
+                ->afterStateHydrated(function (callable $set, $state) {
+                    $sewa = Sewa::find($state);
+
+                    if ($sewa) {
+                        $set('penghuni_id', $sewa->penghuni->id);
+                        $set('kamar_id', $sewa->kamar->id);
+                        $set('tanggal_sewa', $sewa->tanggal_mulai);
+                        $set('jumlah_bayar', $sewa->jumlah_harga ?? 0);
+                    }
                 }),
 
             Forms\Components\Select::make('penghuni_id')
                 ->label('Penghuni')
                 ->options(Penghuni::pluck('nama', 'id'))
                 ->required()
-                ->disabled()
-                ->statePath('penghuni_id'),
+                ->disabled(),
 
             Forms\Components\Select::make('kamar_id')
                 ->label('Kamar')
                 ->options(Kamar::pluck('nomor_kamar', 'id'))
                 ->required()
-                ->disabled()
-                ->statePath('kamar_id'),
+                ->disabled(),
 
             Forms\Components\DatePicker::make('tanggal_transaksi')
                 ->label('Tanggal Transaksi')
-                ->required()
-                ->default(now()),
+                ->required(),
 
             Forms\Components\TextInput::make('jumlah_bayar')
                 ->label('Jumlah Bayar')
-                ->disabled()
-                ->statePath('jumlah_bayar'),
+                ->required()
+                ->disabled(),
 
             Forms\Components\Select::make('metode_pembayaran')
                 ->label('Metode Pembayaran')
@@ -87,18 +95,24 @@ class TransaksiResource extends Resource
         ]);
 }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('sewa.id')->label('ID Sewa'),
-                Tables\Columns\TextColumn::make('tanggal_transaksi')->label('Tanggal Transaksi'),
-                Tables\Columns\TextColumn::make('jumlah_bayar')->label('Jumlah Bayar')
-                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.')),
-                Tables\Columns\TextColumn::make('metode_pembayaran')->label('Metode Pembayaran'),
-                Tables\Columns\TextColumn::make('status_pembayaran')->label('Status Pembayaran'),
-            ]);
-    }
+public static function table(Table $table): Table
+{
+    return $table
+        ->columns([
+            Tables\Columns\TextColumn::make('sewa.id')
+                ->label('ID Sewa')
+                ->sortable()
+                ->searchable(),
+            Tables\Columns\TextColumn::make('sewa.penghuni.nama')
+                ->label('Penghuni')
+                ->sortable()
+                ->searchable(),
+            Tables\Columns\TextColumn::make('tanggal_transaksi')->date()->label('Tanggal Transaksi'),
+            Tables\Columns\TextColumn::make('sewa.jumlah_harga')->label('Jumlah Bayar')->money('IDR'),
+            Tables\Columns\TextColumn::make('metode_pembayaran')->label('Metode Pembayaran'),
+            Tables\Columns\TextColumn::make('status_pembayaran')->label('Status Pembayaran'),
+        ]);
+}
 
     public static function getRelations(): array
     {
@@ -117,3 +131,4 @@ class TransaksiResource extends Resource
         ];
     }
 }
+

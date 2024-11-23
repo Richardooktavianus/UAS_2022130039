@@ -40,7 +40,8 @@ class FasilitasResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama_fasilitas'),
-                Tables\Columns\TextColumn::make('harga'),
+                Tables\Columns\TextColumn::make('harga')
+                    ->money('IDR'),
                 Tables\Columns\TextColumn::make('petugas.nama_petugas'),
             ])
             ->filters([

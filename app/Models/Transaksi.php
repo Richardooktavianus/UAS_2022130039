@@ -36,8 +36,11 @@ class Transaksi extends Model
     public function getJumlahBayarAttribute()
     {
         $kategoriHarga = $this->sewa->kategori->total_harga ?? 0;
+
         $lamaSewa = $this->sewa->lama_sewa ?? 1;
 
         return $kategoriHarga * $lamaSewa;
     }
 }
+
+

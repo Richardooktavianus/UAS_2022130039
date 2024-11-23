@@ -47,7 +47,7 @@ class KamarResource extends Resource
                 Tables\Columns\TextColumn::make('nomor_kamar')->limit(50),
                 Tables\Columns\TextColumn::make('kategori.nama_kategori')->limit(50),
                 Tables\Columns\TextColumn::make('kategori.total_harga')->label('Total Harga')->limit(50)
-                    ->getStateUsing(fn (Kamar $record): string => number_format($record->kategori->total_harga, 2)),
+                    ->money('IDR'),
                 Tables\Columns\TextColumn::make('status'),
             ])
             ->filters([

@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sewa_id')->constrained('sewas')->onDelete('cascade');
-            $table->foreignId('penghuni_id')->nullable()->change();
+            $table->foreignId('penghuni_id')->nullable()->constrained('penghunis')->onDelete('set null');
             $table->timestamp('tanggal_transaksi')->default(now());
-            $table->decimal('jumlah_bayar', 10, 2)->nullable()->change();
+            $table->decimal('jumlah_bayar', 10, 2)->default(0);
             $table->string('metode_pembayaran');
             $table->string('status_pembayaran');
             $table->timestamps();
@@ -31,3 +31,4 @@ return new class extends Migration
         Schema::dropIfExists('transaksis');
     }
 };
+
