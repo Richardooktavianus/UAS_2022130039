@@ -111,6 +111,11 @@ public static function table(Table $table): Table
             Tables\Columns\TextColumn::make('sewa.jumlah_harga')->label('Jumlah Bayar')->money('IDR'),
             Tables\Columns\TextColumn::make('metode_pembayaran')->label('Metode Pembayaran'),
             Tables\Columns\TextColumn::make('status_pembayaran')->label('Status Pembayaran'),
+        ])
+        ->actions([
+            Tables\Actions\ViewAction::make(),
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\DeleteAction::make(),
         ]);
 }
 
