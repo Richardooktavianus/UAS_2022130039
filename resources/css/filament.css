@@ -1,7 +1,7 @@
 :root {
     --primary-color: #4A90E2; /* Ganti dengan warna utama Anda */
     --sidebar-bg-color: #1E293B; /* Warna background sidebar */
-    --sidebar-text-color: #FFFFFF; /* Warna teks di sidebar */
+    --sidebar-text-color: #070707; /* Warna teks di sidebar */
 }
 
 body {
