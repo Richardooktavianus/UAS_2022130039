@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Fasilitas;
+use App\Models\Sewa;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

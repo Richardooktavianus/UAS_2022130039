@@ -19,7 +19,7 @@ class KategoriSeeder extends Seeder
             'harga_per_bulan' => 500000,
             'fasilitas_id' => 1,
             'deskripsi' => 'Tidak ada Kasur dan Lemari',
-            'photo' => '',
+            'photo' => 'bronze.jpeg',
         ]);
         DB::table('kategoris')->insert([
             'id' => 2,
@@ -28,7 +28,7 @@ class KategoriSeeder extends Seeder
             'harga_per_bulan' => 700000,
             'fasilitas_id' => 2,
             'deskripsi' => 'Tempat Tidur dan Meja Belajar',
-            'photo' => '',
+            'photo' => 'silver.jpeg',
         ]);
         DB::table('kategoris')->insert([
             'id' => 3,
@@ -37,7 +37,7 @@ class KategoriSeeder extends Seeder
             'harga_per_bulan' => 1000000,
             'fasilitas_id' => 3,
             'deskripsi' => 'Tempat Tidur, Lemari, Meja Belajar dan AC',
-            'photo' => '',
+            'photo' => 'Gold.jpeg',
         ]);
     }
 }
