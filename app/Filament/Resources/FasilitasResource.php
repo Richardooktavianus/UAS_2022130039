@@ -49,6 +49,7 @@ class FasilitasResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -73,3 +74,4 @@ class FasilitasResource extends Resource
         ];
     }
 }
+

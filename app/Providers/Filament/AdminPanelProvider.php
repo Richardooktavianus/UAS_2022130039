@@ -32,7 +32,12 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->registration()
             ->colors([
-                'primary' => Color::Amber,
+                'danger' => Color::Rose,
+                'gray' => Color::Gray,
+                'info' => Color::Blue,
+                'primary' => Color::Indigo,
+                'success' => Color::Emerald,
+                'warning' => Color::Orange,
             ])
             ->brandName('LOH KOK KOS')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
@@ -43,8 +48,9 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\StatsOverviewWidget::class,
-                BlogPostsChart::class,
-                TransaksiOver::class
+                TransaksiOver::class,
+                BlogPostsChart::class
+
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -59,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->viteTheme('resources/css/filament/admin/theme.css');
     }
 }
