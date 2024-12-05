@@ -20,25 +20,47 @@ class KamarResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-s-ticket';
 
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('nomor_kamar'),
-                Forms\Components\Select::make('status')
-                    ->options([
-                        'tersedia' => 'Tersedia',
-                        'tidak_tersedia' => 'Tidak Tersedia',
-                    ])
-                    ->default('tersedia'),
-                Forms\Components\Select::make('kategori_id')->options(
-                    Kategori::pluck('nama_kategori', 'id')
-                )->required(),
+    protected static ?string $navigationLabel = 'Kamar';
 
-                Forms\Components\Hidden::make('harga')
-                    ->default(fn (): int => Kategori::findOrFail(request()->input('kategori_id'))->harga),
-            ]);
-    }
+    public static function form(Form $form): Form
+{
+    return $form
+        ->schema([
+            Forms\Components\TextInput::make('nomor_kamar')
+                ->required()
+                ->label('Nomor Kamar'),
+
+            Forms\Components\Select::make('status')
+                ->options([
+                    'tersedia' => 'Tersedia',
+                    'tidak_tersedia' => 'Tidak Tersedia',
+                ])
+                ->default('tersedia')
+                ->required()
+                ->label('Status'),
+
+            Forms\Components\Select::make('kategori_id')
+                ->label('Kategori')
+                ->options(Kategori::pluck('nama_kategori', 'id'))
+                ->required()
+                ->reactive() // Menjadikan field reactive untuk memicu update
+                ->afterStateUpdated(function (callable $set, $state) {
+                    // Ambil harga kategori dan set field harga
+                    if ($kategori = Kategori::find($state)) {
+                        $set('harga', $kategori->total_harga);
+                    } else {
+                        $set('harga', null); // Reset jika kategori tidak valid
+                    }
+                }),
+
+            Forms\Components\TextInput::make('harga')
+                ->label('Harga')
+                ->numeric()
+                ->disabled() // Agar tidak bisa diubah oleh pengguna
+                ->required(),
+        ]);
+}
+
 
     public static function table(Table $table): Table
     {
